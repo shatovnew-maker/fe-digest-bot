@@ -1,0 +1,208 @@
+# Настройки бота. После правки файла бот подхватит изменения при следующем запуске.
+
+timezone: Asia/Vladivostok      # в этом поясе показывается время публикаций
+lookback_hours: 30              # за сколько часов назад искать (с запасом к суткам; дубли отсекаются)
+translate_to: ru
+
+# Что попадает в сводку
+include_other_sources: true     # показывать и издания не из списка (отдельным блоком)
+max_other_sources: 15           # не больше стольких материалов «прочих» изданий
+max_items_per_outlet: 4         # не больше стольких материалов одного издания
+max_quotes_per_item: 2          # сколько цитат брать из одной статьи
+max_quote_chars: 320            # длина одной цитаты (длиннее обрезается вокруг ключевого слова)
+send_empty: true                # присылать сообщение, даже если ничего не нашлось
+
+sources:
+  google_news: true
+  bing_news: true
+
+# Ключевые слова по языкам. Фразы из нескольких слов ищутся целиком.
+# editions: в каких языковых версиях Google News искать (hl / gl / ceid).
+languages:
+  en:
+    editions:
+      - {hl: en-US, gl: US, ceid: "US:en"}
+      - {hl: en-SG, gl: SG, ceid: "SG:en"}
+      - {hl: en-GB, gl: GB, ceid: "GB:en"}
+    bing: {setlang: en, cc: us}
+    keywords:
+      - Vladivostok
+      - Primorye
+      - Primorsky
+      - Russian Far East
+      - Russia's Far East
+      - Far Eastern Federal
+      - Khabarovsk
+      - Sakhalin
+      - Kamchatka
+      - Kuril
+      - Yakutia
+      - Magadan
+      - Chukotka
+      - Blagoveshchensk
+      - Birobidzhan
+      - Nakhodka
+      - Ussuriysk
+      - Amur Oblast
+      - Amur region
+  ja:
+    editions:
+      - {hl: ja, gl: JP, ceid: "JP:ja"}
+    bing: {setlang: ja, cc: jp}
+    keywords:
+      - ウラジオストク
+      - 沿海地方
+      - ロシア極東
+      - ハバロフスク
+      - サハリン
+      - カムチャツカ
+      - 北方領土
+      - 国後島
+      - 択捉島
+      - 色丹島
+      - 千島列島
+      - ヤクーツク
+      - マガダン
+      - ナホトカ
+  ko:
+    editions:
+      - {hl: ko, gl: KR, ceid: "KR:ko"}
+    bing: {setlang: ko, cc: kr}
+    keywords:
+      - 블라디보스토크
+      - 연해주
+      - 러시아 극동
+      - 하바롭스크
+      - 사할린
+      - 캄차카
+      - 쿠릴
+      - 야쿠츠크
+      - 마가단
+      - 나홋카
+  zh-Hans:
+    editions:
+      - {hl: zh-CN, gl: CN, ceid: "CN:zh-Hans"}
+    bing: {setlang: zh-hans, cc: cn}
+    keywords:
+      - 符拉迪沃斯托克
+      - 海参崴
+      - 滨海边疆区
+      - 俄罗斯远东
+      - 俄远东
+      - 哈巴罗夫斯克
+      - 伯力
+      - 萨哈林
+      - 库页岛
+      - 堪察加
+      - 布拉戈维申斯克
+      - 雅库特
+  zh-Hant:
+    editions:
+      - {hl: zh-TW, gl: TW, ceid: "TW:zh-Hant"}
+      - {hl: zh-HK, gl: HK, ceid: "HK:zh-Hant"}
+    bing: {setlang: zh-hant, cc: tw}
+    keywords:
+      - 海參崴
+      - 符拉迪沃斯托克
+      - 濱海邊疆區
+      - 俄羅斯遠東
+      - 俄遠東
+      - 伯力
+      - 庫頁島
+      - 堪察加
+      - 千島群島
+
+# Издания из вашего списка. domains: домены сайта (поддомены подхватываются автоматически).
+outlets:
+  "🇨🇳 Китай":
+    - {name: Xinhua, domains: [news.cn, xinhuanet.com]}
+    - {name: China Daily, domains: [chinadaily.com.cn]}
+    - {name: Global Times, domains: [globaltimes.cn]}
+    - {name: CGTN, domains: [cgtn.com]}
+    - {name: People's Daily, domains: [people.cn, people.com.cn]}
+    - {name: Caixin, domains: [caixinglobal.com, caixin.com]}
+    - {name: Sixth Tone, domains: [sixthtone.com]}
+  "🇭🇰 Гонконг и 🇹🇼 Тайвань":
+    - {name: South China Morning Post, domains: [scmp.com]}
+    - {name: Hong Kong Free Press, domains: [hongkongfp.com]}
+    - {name: RTHK, domains: [rthk.hk]}
+    - {name: Focus Taiwan (CNA), domains: [focustaiwan.tw, cna.com.tw]}
+    - {name: Taipei Times, domains: [taipeitimes.com]}
+  "🇯🇵 Япония":
+    - {name: Nikkei, domains: [nikkei.com]}
+    - {name: NHK, domains: [nhk.or.jp, web.nhk]}
+    - {name: The Japan Times, domains: [japantimes.co.jp]}
+    - {name: Kyodo, domains: [kyodonews.net, 47news.jp]}
+    - {name: Asahi Shimbun, domains: [asahi.com]}
+    - {name: Yomiuri, domains: [yomiuri.co.jp]}
+    - {name: Mainichi, domains: [mainichi.jp]}
+  "🇰🇷 Корея":
+    - {name: Yonhap, domains: [yna.co.kr, yonhapnews.co.kr]}
+    - {name: The Korea Herald, domains: [koreaherald.com]}
+    - {name: Korea JoongAng Daily, domains: [joins.com, joongang.co.kr]}
+    - {name: The Korea Times, domains: [koreatimes.co.kr]}
+    - {name: Chosun Ilbo, domains: [chosun.com]}
+    - {name: Hankyoreh, domains: [hani.co.kr]}
+    - {name: KBS, domains: [kbs.co.kr]}
+    - {name: NK News, domains: [nknews.org]}
+  "🌏 Юго-Восточная и Южная Азия":
+    - {name: The Straits Times, domains: [straitstimes.com]}
+    - {name: CNA, domains: [channelnewsasia.com]}
+    - {name: Bangkok Post, domains: [bangkokpost.com]}
+    - {name: The Jakarta Post, domains: [thejakartapost.com]}
+    - {name: Rappler, domains: [rappler.com]}
+    - {name: VnExpress, domains: [vnexpress.net]}
+    - {name: The Hindu, domains: [thehindu.com]}
+    - {name: Hindustan Times, domains: [hindustantimes.com]}
+  "🧭 Аналитика по Азии":
+    - {name: The Diplomat, domains: [thediplomat.com]}
+    - {name: Asia Times, domains: [asiatimes.com]}
+    - {name: East Asia Forum, domains: [eastasiaforum.org]}
+    - {name: The Interpreter (Lowy), domains: [lowyinstitute.org]}
+  "🌍 Западные СМИ":
+    - {name: Reuters, domains: [reuters.com]}
+    - {name: AP, domains: [apnews.com]}
+    - {name: AFP, domains: [afp.com]}
+    - {name: Bloomberg, domains: [bloomberg.com]}
+    - {name: Financial Times, domains: [ft.com]}
+    - {name: The Wall Street Journal, domains: [wsj.com]}
+    - {name: The New York Times, domains: [nytimes.com]}
+    - {name: The Washington Post, domains: [washingtonpost.com]}
+    - {name: The Economist, domains: [economist.com]}
+    - {name: The Guardian, domains: [theguardian.com]}
+    - {name: BBC, domains: [bbc.com, bbc.co.uk]}
+    - {name: CNN, domains: [cnn.com]}
+    - {name: Politico, domains: [politico.com, politico.eu]}
+    - {name: Deutsche Welle, domains: [dw.com]}
+    - {name: France 24, domains: [france24.com]}
+    - {name: Le Monde, domains: [lemonde.fr]}
+    - {name: Al Jazeera, domains: [aljazeera.com]}
+    - {name: Foreign Affairs, domains: [foreignaffairs.com]}
+    - {name: Foreign Policy, domains: [foreignpolicy.com]}
+
+# Кого не показывать вовсе: российские СМИ (нужен взгляд извне),
+# перепечатки-агрегаторы (дают дубли) и шум (ставки, спортивные счета).
+exclude_domains:
+  - .ru
+  - .su
+  - .by
+  - tass.com
+  - rt.com
+  - sputnikglobe.com
+  - sputniknews.com
+  - rbth.com
+  - msn.com
+  - msn.cn
+  - yahoo.com
+  - yahoo.co.jp
+  - news.google.com
+  - note.com
+  - infoseek.co.jp
+  - livedoor.com
+  - auone.jp
+  - smartnews.com
+  - sofascore.com
+  - flashscore.com
+  - oddsscanner.net
+  - liontips.com
+  - wikipedia.org
