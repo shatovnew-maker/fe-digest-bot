@@ -393,29 +393,79 @@ def translate_claude(texts: list[str], target: str) -> list[str] | None:
     return None
 
 
-def translate_google(texts: list[str], target: str) -> list[str]:
+# Бесплатные переводчики пробуются по очереди: если первый не ответил, берётся следующий.
+LANG_CODES = {"en": "en", "ja": "ja", "ko": "ko", "zh-Hans": "zh-CN", "zh-Hant": "zh-TW"}
+TRANSLATION_STATS = {"total": 0, "ok": 0, "engines": set()}
+
+
+def tr_google_gtx(text: str, src: str, target: str) -> str:
+    r = requests.get("https://translate.googleapis.com/translate_a/single",
+                     params={"client": "gtx", "sl": "auto", "tl": target, "dt": "t", "q": text},
+                     headers={"User-Agent": USER_AGENT}, timeout=20)
+    r.raise_for_status()
+    return "".join(seg[0] for seg in r.json()[0] if seg and seg[0])
+
+
+def tr_google_web(text: str, src: str, target: str) -> str:
     from deep_translator import GoogleTranslator
-    tr = GoogleTranslator(source="auto", target=target)
+    return GoogleTranslator(source="auto", target=target).translate(text) or ""
+
+
+def tr_mymemory(text: str, src: str, target: str) -> str:
+    r = requests.get("https://api.mymemory.translated.net/get",
+                     params={"q": text[:500], "langpair": f"{LANG_CODES.get(src, 'en')}|{target}"},
+                     timeout=20)
+    r.raise_for_status()
+    data = r.json()
+    if str(data.get("responseStatus")) != "200":
+        raise RuntimeError(data.get("responseDetails"))
+    return data["responseData"]["translatedText"] or ""
+
+
+FREE_ENGINES = [("Google", tr_google_gtx), ("Google (веб)", tr_google_web), ("MyMemory", tr_mymemory)]
+
+
+def translate_free(pairs: list[tuple[str, str]], target: str) -> list[str]:
+    failures = {name: 0 for name, _ in FREE_ENGINES}
     out = []
-    for t in texts:
-        try:
-            out.append(tr.translate(t) or "")
-        except Exception as exc:
-            log.info("Перевод не удался: %s", exc)
-            out.append("")
-        time.sleep(0.2)
+    for text, src in pairs:
+        result = ""
+        for name, fn in FREE_ENGINES:
+            if failures[name] >= 3:          # переводчик трижды подряд не ответил — больше не ждём его
+                continue
+            try:
+                result = (fn(text, src, target) or "").strip()
+            except Exception as exc:
+                log.info("Переводчик %s не ответил: %s", name, exc)
+                result = ""
+            if result:
+                failures[name] = 0
+                TRANSLATION_STATS["engines"].add(name)
+                break
+            failures[name] += 1
+        out.append(result)
+        time.sleep(0.15)
     return out
 
 
 def translate(items: list[Item], target: str) -> None:
-    texts: list[str] = []
+    pairs: list[tuple[str, str]] = []
     for it in items:
-        texts.append(it.title)
-        texts.extend(it.quotes)
-    texts = list(dict.fromkeys(t for t in texts if t))
-    if not texts:
+        pairs.append((it.title, it.lang))
+        pairs.extend((q, it.lang) for q in it.quotes)
+    pairs = list(dict.fromkeys(p for p in pairs if p[0]))
+    if not pairs:
         return
-    translated = translate_claude(texts, target) or translate_google(texts, target)
+    texts = [t for t, _ in pairs]
+    translated = translate_claude(texts, target)
+    if translated:
+        TRANSLATION_STATS["engines"].add("Claude")
+    else:
+        translated = translate_free(pairs, target)
+    TRANSLATION_STATS["total"] = len(texts)
+    TRANSLATION_STATS["ok"] = sum(1 for t in translated if t)
+    log.info("Переведено %d из %d (%s)", TRANSLATION_STATS["ok"], len(texts),
+             ", ".join(sorted(TRANSLATION_STATS["engines"])) or "ни один переводчик не ответил")
     mapping = dict(zip(texts, translated))
     for it in items:
         it.title_tr = mapping.get(it.title, "")
@@ -482,6 +532,11 @@ def build_messages(items: list[Item], cfg: dict, hours: int, skipped: int,
         footer += f" · уже присылались раньше: {skipped}"
     if failed_feeds:
         footer += f" · не открылось лент: {failed_feeds}"
+    total, ok = TRANSLATION_STATS["total"], TRANSLATION_STATS["ok"]
+    if total and ok == 0:
+        footer += " · ⚠️ перевод не удался: ни один переводчик не ответил"
+    elif total and ok < total:
+        footer += f" · переведено {ok} из {total} фрагментов"
     blocks.append(footer + "</i>")
 
     messages, current = [], ""
