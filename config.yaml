@@ -9,7 +9,7 @@ include_other_sources: true     # показывать и издания не и
 max_other_sources: 15           # не больше стольких материалов «прочих» изданий
 max_items_per_outlet: 4         # не больше стольких материалов одного издания
 max_quotes_per_item: 2          # сколько цитат брать из одной статьи
-max_quote_chars: 320            # длина одной цитаты (длиннее обрезается вокруг ключевого слова)
+max_quote_chars: 240            # длина одной цитаты (длиннее обрезается вокруг ключевого слова)
 send_empty: true                # присылать сообщение, даже если ничего не нашлось
 
 sources:
@@ -112,73 +112,86 @@ languages:
       - 堪察加
       - 千島群島
 
+# Еженедельный пост рубрики «О чём пишут иностранные СМИ»
+weekly:
+  lookback_hours: 168          # за какой период собирать (7 дней)
+  cover: cover.jpg             # обложка рубрики (лежит рядом с bot.py)
+  max_items: 6                 # не больше стольких сюжетов в посте
+  max_summary_chars: 150       # длина строки-пересказа одного сюжета
+  include_other_sources: true  # если изданий из списка мало — добирать из прочих
+  reserve_items: 8             # сколько запасных сюжетов прислать отдельным сообщением
+  intro: ""                    # строка перед списком (пусто — без неё)
+  hashtag: ""                  # например "#ИноСМИоДВ" (пусто — без хештега)
+  footer: '▪️ РБК Восток в <a href="https://t.me/prim_rbc">Telegram</a> и <a href="https://max.ru/prim_rbc">MAX</a>'
+
 # Издания из вашего списка. domains: домены сайта (поддомены подхватываются автоматически).
+# flag: флаг страны в посте рубрики; state: true — госСМИ, в посте помечается «(госиздание)».
 outlets:
   "🇨🇳 Китай":
-    - {name: Xinhua, domains: [news.cn, xinhuanet.com]}
-    - {name: China Daily, domains: [chinadaily.com.cn]}
-    - {name: Global Times, domains: [globaltimes.cn]}
-    - {name: CGTN, domains: [cgtn.com]}
-    - {name: People's Daily, domains: [people.cn, people.com.cn]}
-    - {name: Caixin, domains: [caixinglobal.com, caixin.com]}
-    - {name: Sixth Tone, domains: [sixthtone.com]}
+    - {name: Xinhua, flag: "🇨🇳", state: true, domains: [news.cn, xinhuanet.com]}
+    - {name: China Daily, flag: "🇨🇳", state: true, domains: [chinadaily.com.cn]}
+    - {name: Global Times, flag: "🇨🇳", state: true, domains: [globaltimes.cn]}
+    - {name: CGTN, flag: "🇨🇳", state: true, domains: [cgtn.com]}
+    - {name: People's Daily, flag: "🇨🇳", state: true, domains: [people.cn, people.com.cn]}
+    - {name: Caixin, flag: "🇨🇳", domains: [caixinglobal.com, caixin.com]}
+    - {name: Sixth Tone, flag: "🇨🇳", state: true, domains: [sixthtone.com]}
   "🇭🇰 Гонконг и 🇹🇼 Тайвань":
-    - {name: South China Morning Post, domains: [scmp.com]}
-    - {name: Hong Kong Free Press, domains: [hongkongfp.com]}
-    - {name: RTHK, domains: [rthk.hk]}
-    - {name: Focus Taiwan (CNA), domains: [focustaiwan.tw, cna.com.tw]}
-    - {name: Taipei Times, domains: [taipeitimes.com]}
+    - {name: South China Morning Post, flag: "🇭🇰", domains: [scmp.com]}
+    - {name: Hong Kong Free Press, flag: "🇭🇰", domains: [hongkongfp.com]}
+    - {name: RTHK, flag: "🇭🇰", domains: [rthk.hk]}
+    - {name: Focus Taiwan (CNA), flag: "🇹🇼", domains: [focustaiwan.tw, cna.com.tw]}
+    - {name: Taipei Times, flag: "🇹🇼", domains: [taipeitimes.com]}
   "🇯🇵 Япония":
-    - {name: Nikkei, domains: [nikkei.com]}
-    - {name: NHK, domains: [nhk.or.jp, web.nhk]}
-    - {name: The Japan Times, domains: [japantimes.co.jp]}
-    - {name: Kyodo, domains: [kyodonews.net, 47news.jp]}
-    - {name: Asahi Shimbun, domains: [asahi.com]}
-    - {name: Yomiuri, domains: [yomiuri.co.jp]}
-    - {name: Mainichi, domains: [mainichi.jp]}
+    - {name: Nikkei, flag: "🇯🇵", domains: [nikkei.com]}
+    - {name: NHK, flag: "🇯🇵", domains: [nhk.or.jp, web.nhk]}
+    - {name: The Japan Times, flag: "🇯🇵", domains: [japantimes.co.jp]}
+    - {name: Kyodo, flag: "🇯🇵", domains: [kyodonews.net, 47news.jp]}
+    - {name: Asahi Shimbun, flag: "🇯🇵", domains: [asahi.com]}
+    - {name: Yomiuri, flag: "🇯🇵", domains: [yomiuri.co.jp]}
+    - {name: Mainichi, flag: "🇯🇵", domains: [mainichi.jp]}
   "🇰🇷 Корея":
-    - {name: Yonhap, domains: [yna.co.kr, yonhapnews.co.kr]}
-    - {name: The Korea Herald, domains: [koreaherald.com]}
-    - {name: Korea JoongAng Daily, domains: [joins.com, joongang.co.kr]}
-    - {name: The Korea Times, domains: [koreatimes.co.kr]}
-    - {name: Chosun Ilbo, domains: [chosun.com]}
-    - {name: Hankyoreh, domains: [hani.co.kr]}
-    - {name: KBS, domains: [kbs.co.kr]}
-    - {name: NK News, domains: [nknews.org]}
+    - {name: Yonhap, flag: "🇰🇷", domains: [yna.co.kr, yonhapnews.co.kr]}
+    - {name: The Korea Herald, flag: "🇰🇷", domains: [koreaherald.com]}
+    - {name: Korea JoongAng Daily, flag: "🇰🇷", domains: [joins.com, joongang.co.kr]}
+    - {name: The Korea Times, flag: "🇰🇷", domains: [koreatimes.co.kr]}
+    - {name: Chosun Ilbo, flag: "🇰🇷", domains: [chosun.com]}
+    - {name: Hankyoreh, flag: "🇰🇷", domains: [hani.co.kr]}
+    - {name: KBS, flag: "🇰🇷", domains: [kbs.co.kr]}
+    - {name: NK News, flag: "🌐", domains: [nknews.org]}
   "🌏 Юго-Восточная и Южная Азия":
-    - {name: The Straits Times, domains: [straitstimes.com]}
-    - {name: CNA, domains: [channelnewsasia.com]}
-    - {name: Bangkok Post, domains: [bangkokpost.com]}
-    - {name: The Jakarta Post, domains: [thejakartapost.com]}
-    - {name: Rappler, domains: [rappler.com]}
-    - {name: VnExpress, domains: [vnexpress.net]}
-    - {name: The Hindu, domains: [thehindu.com]}
-    - {name: Hindustan Times, domains: [hindustantimes.com]}
+    - {name: The Straits Times, flag: "🇸🇬", domains: [straitstimes.com]}
+    - {name: CNA, flag: "🇸🇬", domains: [channelnewsasia.com]}
+    - {name: Bangkok Post, flag: "🇹🇭", domains: [bangkokpost.com]}
+    - {name: The Jakarta Post, flag: "🇮🇩", domains: [thejakartapost.com]}
+    - {name: Rappler, flag: "🇵🇭", domains: [rappler.com]}
+    - {name: VnExpress, flag: "🇻🇳", domains: [vnexpress.net]}
+    - {name: The Hindu, flag: "🇮🇳", domains: [thehindu.com]}
+    - {name: Hindustan Times, flag: "🇮🇳", domains: [hindustantimes.com]}
   "🧭 Аналитика по Азии":
-    - {name: The Diplomat, domains: [thediplomat.com]}
-    - {name: Asia Times, domains: [asiatimes.com]}
-    - {name: East Asia Forum, domains: [eastasiaforum.org]}
-    - {name: The Interpreter (Lowy), domains: [lowyinstitute.org]}
+    - {name: The Diplomat, flag: "🌐", domains: [thediplomat.com]}
+    - {name: Asia Times, flag: "🇭🇰", domains: [asiatimes.com]}
+    - {name: East Asia Forum, flag: "🇦🇺", domains: [eastasiaforum.org]}
+    - {name: The Interpreter (Lowy), flag: "🇦🇺", domains: [lowyinstitute.org]}
   "🌍 Западные СМИ":
-    - {name: Reuters, domains: [reuters.com]}
-    - {name: AP, domains: [apnews.com]}
-    - {name: AFP, domains: [afp.com]}
-    - {name: Bloomberg, domains: [bloomberg.com]}
-    - {name: Financial Times, domains: [ft.com]}
-    - {name: The Wall Street Journal, domains: [wsj.com]}
-    - {name: The New York Times, domains: [nytimes.com]}
-    - {name: The Washington Post, domains: [washingtonpost.com]}
-    - {name: The Economist, domains: [economist.com]}
-    - {name: The Guardian, domains: [theguardian.com]}
-    - {name: BBC, domains: [bbc.com, bbc.co.uk]}
-    - {name: CNN, domains: [cnn.com]}
-    - {name: Politico, domains: [politico.com, politico.eu]}
-    - {name: Deutsche Welle, domains: [dw.com]}
-    - {name: France 24, domains: [france24.com]}
-    - {name: Le Monde, domains: [lemonde.fr]}
-    - {name: Al Jazeera, domains: [aljazeera.com]}
-    - {name: Foreign Affairs, domains: [foreignaffairs.com]}
-    - {name: Foreign Policy, domains: [foreignpolicy.com]}
+    - {name: Reuters, flag: "🇬🇧", domains: [reuters.com]}
+    - {name: AP, flag: "🇺🇸", domains: [apnews.com]}
+    - {name: AFP, flag: "🇫🇷", domains: [afp.com]}
+    - {name: Bloomberg, flag: "🇺🇸", domains: [bloomberg.com]}
+    - {name: Financial Times, flag: "🇬🇧", domains: [ft.com]}
+    - {name: The Wall Street Journal, flag: "🇺🇸", domains: [wsj.com]}
+    - {name: The New York Times, flag: "🇺🇸", domains: [nytimes.com]}
+    - {name: The Washington Post, flag: "🇺🇸", domains: [washingtonpost.com]}
+    - {name: The Economist, flag: "🇬🇧", domains: [economist.com]}
+    - {name: The Guardian, flag: "🇬🇧", domains: [theguardian.com]}
+    - {name: BBC, flag: "🇬🇧", domains: [bbc.com, bbc.co.uk]}
+    - {name: CNN, flag: "🇺🇸", domains: [cnn.com]}
+    - {name: Politico, flag: "🇺🇸", domains: [politico.com, politico.eu]}
+    - {name: Deutsche Welle, flag: "🇩🇪", domains: [dw.com]}
+    - {name: France 24, flag: "🇫🇷", domains: [france24.com]}
+    - {name: Le Monde, flag: "🇫🇷", domains: [lemonde.fr]}
+    - {name: Al Jazeera, flag: "🇶🇦", domains: [aljazeera.com]}
+    - {name: Foreign Affairs, flag: "🇺🇸", domains: [foreignaffairs.com]}
+    - {name: Foreign Policy, flag: "🇺🇸", domains: [foreignpolicy.com]}
 
 # Кого не показывать вовсе: российские СМИ (нужен взгляд извне),
 # перепечатки-агрегаторы (дают дубли) и шум (ставки, спортивные счета).
