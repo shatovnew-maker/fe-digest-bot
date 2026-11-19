@@ -2,10 +2,16 @@ name: Ежедневная сводка
 
 on:
   schedule:
-    # Время в UTC. 21:47 UTC = 07:47 по Владивостоку (GitHub иногда запускает на 5–30 минут позже).
-    - cron: "47 21 * * *"
+    # Время в UTC (Владивосток = UTC+10). GitHub иногда запускает на 5–30 минут позже.
+    - cron: "47 21 * * *"   # каждый день в 07:47 — сводка упоминаний
+    - cron: "13 0 * * 5"    # по пятницам в 10:13 — пост рубрики «О чём пишут иностранные СМИ»
   workflow_dispatch:
     inputs:
+      mode:
+        description: "Что собрать"
+        type: choice
+        options: [daily, weekly]
+        default: daily
       hours:
         description: "За сколько часов искать (пусто — как в config.yaml)"
         required: false
@@ -21,7 +27,7 @@ concurrency:
 jobs:
   digest:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -33,12 +39,13 @@ jobs:
       - name: Установить зависимости
         run: pip install -r requirements.txt
 
-      - name: Собрать и отправить сводку
+      - name: Собрать и отправить
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           HOURS: ${{ github.event.inputs.hours }}
+          MODE: ${{ github.event.schedule == '13 0 * * 5' && 'weekly' || github.event.inputs.mode || 'daily' }}
         run: python bot.py
 
       - name: Сохранить список отправленного
@@ -46,5 +53,5 @@ jobs:
         run: |
           git config user.name "digest-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/seen.json
+          git add state 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "Обновить список отправленных ссылок" && git push)
